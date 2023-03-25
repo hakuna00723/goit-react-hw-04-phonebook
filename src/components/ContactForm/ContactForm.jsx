@@ -40,7 +40,7 @@ export const ContactForm = ({ onAddContact }) => {
       initialValues={initialValues}
       validationSchema={schema}
       onSubmit={handleSubmit}
-          >
+    >
       <FormStylized autoComplete="off">
         <label htmlFor="name">
           Name
