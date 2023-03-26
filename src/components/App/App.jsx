@@ -1,45 +1,32 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import { ContactList } from '../ContactList/ContactList';
 import { ContactForm } from '../ContactForm/ContactForm';
 import { Filter } from '../Filter/Filter';
 import { Box } from './App.styled';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
-
-  componentDidMount() {
-    const savedContacts = localStorage.getItem('contacts')
+export const App = () => {
+  const [contacts, setContacts] = useState(() => {
+    const savedContacts = localStorage.getItem('contacts');
     if (savedContacts !== null) {
       const parsedContacts = JSON.parse(savedContacts);
-      this.setState({ contacts: parsedContacts });
-      return
+      return parsedContacts;
     }
-    
-    this.setState({
-      contacts: [
-        { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-        { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-        { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-        { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-      ],
-    });
-  }
+    return [
+      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+    ];
+  });
+  const [filter, setFilter] = useState('');
 
-  componentDidUpdate(_, prevState) {
-    const { contacts } = this.state;
-    
-    if (prevState.contacts !== contacts) {
-      localStorage.setItem('contacts', JSON.stringify(contacts))
-    }
-  }
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-  addContact = (values, { resetForm }) => {
+  const addContact = (values, { resetForm }) => {
     let newContact = values;
-    const { contacts } = this.state;
 
     const checkContact = contacts.filter(
       contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
@@ -48,12 +35,9 @@ export class App extends Component {
     if (checkContact.length) {
       alert(`${newContact.name} is already in contacts`);
       return;
-
     } else {
       newContact.id = nanoid();
-      this.setState(prevState => ({
-        contacts: [...prevState.contacts, newContact],
-      }));
+      setContacts(prevState => [...prevState, newContact]);
 
       resetForm({
         name: '',
@@ -62,43 +46,27 @@ export class App extends Component {
     }
   };
 
-  filterContacts = () => {
-    const { contacts, filter } = this.state;
-
-    if (!filter) {
-      return contacts;
-    }
+  const filterContacts = () => {
     return contacts.filter(({ name }) => {
       return name.toLowerCase().includes(filter.toLowerCase());
     });
   };
 
-  onFilter = ({ target: { name, value } }) => {
-    this.setState({
-      [name]: value,
-    });
+  const onFilter = ({ target: { value } }) => {
+    setFilter(value);
   };
 
-  onDelete = contactId => {
-    const { contacts } = this.state;
-
-    this.setState({
-      contacts: contacts.filter(({ id }) => id !== contactId),
-    });
+  const onDelete = contactId => {
+    setContacts(prevState => prevState.filter(({ id }) => id !== contactId));
   };
 
-  render() {
-    return (
-      <Box>
-        <h1>Phonebook</h1>
-        <ContactForm onAddContact={this.addContact} />
-        <h2>Contacts</h2>
-        <Filter onFilter={this.onFilter} />
-        <ContactList
-          filtered={this.filterContacts()}
-          onDelete={this.onDelete}
-        />
-      </Box>
-    );
-  }
-}
+  return (
+    <Box>
+      <h1>Phonebook</h1>
+      <ContactForm onAddContact={addContact} />
+      <h2>Contacts</h2>
+      <Filter onFilter={onFilter} />
+      <ContactList filtered={filterContacts()} onDelete={onDelete} />
+    </Box>
+  );
+};

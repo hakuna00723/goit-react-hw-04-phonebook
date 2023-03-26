@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { DeleteBtn, Item, Info } from './ContactListItem.styled';
 
-export const ListItem = ({ name, number, onDelete, delContact}) => {
+export const ContactListItem = ({ name, number, onDelete, delContact }) => {
   return (
     <Item>
       <Info>{name}</Info>
@@ -11,7 +11,7 @@ export const ListItem = ({ name, number, onDelete, delContact}) => {
   );
 };
 
-ListItem.propTypes = {
+ContactListItem.propTypes = {
   name: PropTypes.string.isRequired,
   number: PropTypes.string.isRequired,
   onDelete: PropTypes.func.isRequired,
