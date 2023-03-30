@@ -28,22 +28,21 @@ export const App = () => {
   const addContact = (values, { resetForm }) => {
     let newContact = values;
 
-    const checkContact = contacts.filter(
+    const checkContact = contacts.find(
       contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
     );
 
-    if (checkContact.length) {
+    if (checkContact) {
       alert(`${newContact.name} is already in contacts`);
       return;
-    } else {
-      newContact.id = nanoid();
-      setContacts(prevState => [...prevState, newContact]);
-
-      resetForm({
-        name: '',
-        number: '',
-      });
     }
+
+    newContact.id = nanoid();
+    setContacts(prevState => [...prevState, newContact]);
+    resetForm({
+      name: '',
+      number: '',
+    });
   };
 
   const filterContacts = () => {
